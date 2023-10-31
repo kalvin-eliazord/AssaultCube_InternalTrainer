@@ -11,12 +11,25 @@ DWORD WINAPI HackThread(HMODULE hModule)
 
     Player* localPlayer{ MemManager::GetLocalPlayer()};
 
-    std::cout << *MemManager::GetEntityListBaseAddr << "\n";
+    std::cout << localPlayer->m_health << "\n";
+    std::cout << localPlayer->name << "\n";
 
     //Hack Loop
     while (!GetAsyncKeyState(VK_DELETE) & 1)
     {
         localPlayer->m_health = 1337;
+
+        for (int i{ 1 }; i < *EntityManager::GetNumberOfPlayer(); ++i)
+        {
+            Player* entity{ EntityManager::GetEntity(i) };
+
+            if (EntityManager::IsValid(entity))
+            {
+                //Aimbot::CalculateAngles(entity);
+
+            }
+            
+        }
 
         Sleep(5);
     }

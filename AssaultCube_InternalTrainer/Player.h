@@ -5,7 +5,6 @@ struct Vector3 { float x, y, z; };
 class Player
 {
 	public:
-		char pad_0000[4]; //0x0000
 		Vector3 m_HeadCoords; //0x0004
 		char pad_0010[36]; //0x0010
 		Vector3 m_Coords; //0x0034
@@ -24,7 +23,9 @@ class Player
 		int32_t nbPistolShot; //0x018C
 		char pad_0190[16]; //0x0190
 		int32_t nbRifleShot; //0x01A0
-		char pad_01A4[392]; //0x01A4
-		int32_t teamID; //0x032C
-		char pad_0330[1304]; //0x0330
-}; //Size: 0x0848
+		char pad_01A4[129]; //0x01A4
+		char name[12]; //0x0225
+		char pad_0231[248]; //0x0231
+		int32_t teamID; //0x0329
+		char pad_032D[1292]; //0x032D
+};

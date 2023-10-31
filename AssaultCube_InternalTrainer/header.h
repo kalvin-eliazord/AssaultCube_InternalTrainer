@@ -4,3 +4,5 @@
 #include <cstdio>
 #include "Player.h"
 #include "MemManager.h"
+#include "EntityManager.h"
+#include "Aimbot.h"
