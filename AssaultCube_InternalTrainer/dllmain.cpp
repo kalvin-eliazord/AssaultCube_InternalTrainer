@@ -1,4 +1,4 @@
-#include "pch.h"
+#include "header.h"
 
 DWORD WINAPI HackThread(HMODULE hModule)
 {
@@ -9,16 +9,15 @@ DWORD WINAPI HackThread(HMODULE hModule)
 
     std::cout << "Assault Cube Internal Trainer by Kalvin" << "\n";
 
-    const uintptr_t modBaseAddr{ (uintptr_t) GetModuleHandle(L"ac_client.exe") };
+    Player* localPlayer{ MemManager::GetLocalPlayer()};
 
-    Player* localPlayer{ *(Player**) (modBaseAddr + 0x10f4f4) };
-
-    std::cout << localPlayer->m_health << "\n";
+    std::cout << *MemManager::GetEntityListBaseAddr << "\n";
 
     //Hack Loop
     while (!GetAsyncKeyState(VK_DELETE) & 1)
     {
         localPlayer->m_health = 1337;
+
         Sleep(5);
     }
 
