@@ -5,6 +5,7 @@ struct Vector3 { float x, y, z; };
 class Player
 {
 	public:
+		char pad_0000[4]; //0x0000
 		Vector3 m_HeadCoords; //0x0004
 		char pad_0010[36]; //0x0010
 		Vector3 m_Coords; //0x0034

@@ -13,7 +13,7 @@ Player* EntityManager::GetEntity(int iEntity)
 {
 	Player* entity{ nullptr };
 
-	return entity = (Player*) ((uintptr_t*)GetEntityListBaseAddr() + iEntity * 4) ;
+	return entity = *(Player**) (*GetEntityListBaseAddr() + iEntity * 4) ;
 }
 
 int* EntityManager::GetNumberOfPlayer()

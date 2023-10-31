@@ -7,6 +7,9 @@ uintptr_t MemManager::GetModBaseAddr()
 
 Player* MemManager::GetLocalPlayer()
 {
-	constexpr uintptr_t localPlayerOffset{ 0x10f4f4 };
-	return *(Player**) (GetModBaseAddr() + localPlayerOffset);
+	Player* localPlayer{ nullptr };
+
+	uintptr_t localPlayerOffset{ 0x10f4f4 };
+
+	return localPlayer = *(Player**)(GetModBaseAddr() + localPlayerOffset);
 }
