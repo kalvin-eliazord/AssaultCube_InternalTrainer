@@ -21,6 +21,9 @@
     <Filter Include="Aimbot">
       <UniqueIdentifier>{ddb542a8-8dc4-486a-aa52-a6da9fe0f5d1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Target">
+      <UniqueIdentifier>{291debe0-6e54-4bb4-b42d-0f30af8722db}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Player.h">
@@ -38,6 +41,9 @@
     <ClInclude Include="Aimbot.h">
       <Filter>Aimbot</Filter>
     </ClInclude>
+    <ClInclude Include="Target.h">
+      <Filter>Target</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -54,6 +60,9 @@
     </ClCompile>
     <ClCompile Include="Aimbot.cpp">
       <Filter>Aimbot</Filter>
+    </ClCompile>
+    <ClCompile Include="Target.cpp">
+      <Filter>Target</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

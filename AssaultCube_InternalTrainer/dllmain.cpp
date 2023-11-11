@@ -1,10 +1,5 @@
 #include "header.h"
 
-bool ShortestDistance(const Vector3 pDst1, const Vector3 pDst2)
-{
-    return (pDst1 < pDst2);
-}
-
 DWORD WINAPI HackThread(HMODULE hModule)
 {
     // create a file to open a writtable console 
@@ -23,25 +18,44 @@ DWORD WINAPI HackThread(HMODULE hModule)
         localPlayer->assaultRifleAmmo = 1337;
         localPlayer->magPistolAmmo = 1337;
 
-        std::vector<Player*> listOfTarget{};
+        std::vector<Vector3> DistanceTargetList{};
 
-        // iterate all the entities
+        float closestDistance{NULL};
+        float currentDistance{NULL};
+        int entityDistIndex{ -1 };
+
+        // iterate all the entities to find the closest 
         for (int i{ 1 }; i < *EntityManager::GetNumberOfPlayer(); ++i)
         {
             Player* entity{ EntityManager::GetEntity(i) };
 
-            if (EntityManager::IsValid(entity))
-                listOfTarget.push_back(entity);
+            if (!EntityManager::IsValid(entity))
+                continue;
+
+            const Vector3 delta{ Aimbot::GetDelta(localPlayer->m_Coords, entity->m_Coords) };
+                
+            const float currentDistance = Aimbot::GetMagnitude(delta);
+
+            if (currentDistance < closestDistance)
+            {
+                closestDistance = currentDistance;
+                entityDistIndex = i;
+            }
         }
 
-        // iterate all the targets
-        for(Player* entity : listOfTarget)
-        {
-            const Vector3 calcAngles{ Aimbot::CalculateAngles(entity) };
+        // error, stop the program
+        if (entityDistIndex == -1)
+            return -1;
 
-        }
+        Player* closestTarget{ EntityManager::GetEntity(entityDistIndex) };
+        const Vector3 targetAngle{ Aimbot::CalculateAngles(closestTarget) };
 
-        Sleep(5);
+        // aim at
+   //     if (GetAsyncKeyState(VK_RBUTTON))
+ //       {
+            localPlayer->m_Angles.x = targetAngle.x;
+            localPlayer->m_Angles.y = targetAngle.y;
+    //    }
     }
 
     if (f)

@@ -6,13 +6,25 @@ Vector3 Aimbot::CalculateAngles(Player* pEntity)
 
 	Player* localPlayer{ MemManager::GetLocalPlayer() };
 
-	//get Delta
-	const Vector3 delta{ GetDelta(localPlayer->m_Coords, pEntity->m_Coords) };
+	const Vector3 delta{ GetDelta(localPlayer->m_HeadCoords, pEntity->m_HeadCoords) };
 
-	// NEED TO GRASP THE CONCEPT OF TRIG
-	//calculatedAngles.x = ::atan2f(delta.y, delta.x);
-	//calculatedAngles.y = ::asinf(GetMagnitude(delta));
+	// yaw
+	calculatedAngles.x = ::atan2f(delta.y, delta.x) * (57.29577951307855); // converting rad to degree
+	// pitch
+	calculatedAngles.y = ::asinf(GetMagnitude(delta)) * (57.29577951307855);
 
+	while (calculatedAngles.x > 360.0f)
+		calculatedAngles.x = 0.0f;
+
+	while (calculatedAngles.x < 0.0f)
+		calculatedAngles.x = 360.0f;
+
+	if (calculatedAngles.y > 90.0f)
+		calculatedAngles.y = 90.0f;
+
+	if (calculatedAngles.y < 0.0f)
+		calculatedAngles.y = 0.0f;
+	
 	return calculatedAngles;
 }
 
