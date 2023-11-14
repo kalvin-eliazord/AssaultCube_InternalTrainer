@@ -11,6 +11,10 @@ DWORD WINAPI HackThread(HMODULE hModule)
 
     Player* localPlayer{ MemManager::GetLocalPlayer()};
 
+    float closestDistance{ 1000000.0f };
+    float currentDistance{ NULL };
+    int entityDistIndex{ -1 };
+
     // Hacking Loop
     while (!GetAsyncKeyState(VK_DELETE) & 1)
     {
@@ -19,10 +23,6 @@ DWORD WINAPI HackThread(HMODULE hModule)
         localPlayer->magPistolAmmo = 1337;
 
         std::vector<Vector3> DistanceTargetList{};
-
-        float closestDistance{NULL};
-        float currentDistance{NULL};
-        int entityDistIndex{ -1 };
 
         // iterate all the entities to find the closest 
         for (int i{ 1 }; i < *EntityManager::GetNumberOfPlayer(); ++i)
@@ -51,11 +51,11 @@ DWORD WINAPI HackThread(HMODULE hModule)
         const Vector3 targetAngle{ Aimbot::CalculateAngles(closestTarget) };
 
         // aim at
-   //     if (GetAsyncKeyState(VK_RBUTTON))
- //       {
+        if (GetAsyncKeyState(VK_RBUTTON))
+        {
             localPlayer->m_Angles.x = targetAngle.x;
             localPlayer->m_Angles.y = targetAngle.y;
-    //    }
+        }
     }
 
     if (f)

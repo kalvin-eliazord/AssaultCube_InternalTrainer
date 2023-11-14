@@ -8,22 +8,23 @@ Vector3 Aimbot::CalculateAngles(Player* pEntity)
 
 	const Vector3 delta{ GetDelta(localPlayer->m_HeadCoords, pEntity->m_HeadCoords) };
 
-	// yaw
-	calculatedAngles.x = ::atan2f(delta.y, delta.x) * (57.29577951307855); // converting rad to degree
-	// pitch
-	calculatedAngles.y = ::asinf(GetMagnitude(delta)) * (57.29577951307855);
+	// use atan2f y/x
+	calculatedAngles.x = ::atanf(delta.x / delta.y) * -57.2957795f;
+	// use asinf
+	calculatedAngles.y = ::atanf(delta.z / ::sqrtf(
+		delta.x * delta.x + delta.y * delta.y))
+		* -57.2957795f;
 
-	while (calculatedAngles.x > 360.0f)
-		calculatedAngles.x = 0.0f;
+	if (delta.y < 0.0f)
+		calculatedAngles.x += 180.0f;
 
 	while (calculatedAngles.x < 0.0f)
-		calculatedAngles.x = 360.0f;
+		calculatedAngles.x += 360.f;
 
-	if (calculatedAngles.y > 90.0f)
-		calculatedAngles.y = 90.0f;
+	while (calculatedAngles.x >= 360.0f)
+		calculatedAngles.x -= 360.0f;
 
-	if (calculatedAngles.y < 0.0f)
-		calculatedAngles.y = 0.0f;
+	calculatedAngles.y = std::clamp(calculatedAngles.y, -90.0f, 90.0f);
 	
 	return calculatedAngles;
 }
