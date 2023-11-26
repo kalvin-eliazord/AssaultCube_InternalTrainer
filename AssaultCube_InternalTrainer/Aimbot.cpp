@@ -1,10 +1,10 @@
 #include "header.h"
 
-Vector3 Aimbot::CalculateAngles(Player* pEntity)
+Vector3 Aimbot::CalculateAngles(Entity* pEntity)
 {
 	Vector3 calculatedAngles{};
 
-	Player* localPlayer{ MemManager::GetLocalPlayer() };
+	Entity* localPlayer{ EntityManager::GetLocalPlayerAddr() };
 
 	const Vector3 delta{ GetDelta(localPlayer->m_HeadCoords, pEntity->m_HeadCoords) };
 

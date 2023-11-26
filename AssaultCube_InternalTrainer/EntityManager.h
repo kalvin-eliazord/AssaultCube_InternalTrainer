@@ -1,8 +1,9 @@
 #pragma once
 namespace EntityManager
 {
-	Player* GetEntity(int iEntity);
-	bool IsValid(Player* pEntity);
+	Entity* GetLocalPlayerAddr();
 	uintptr_t* GetEntityListBaseAddr();
+	Entity* GetEntity(int iEntity);
+	bool IsValid(Entity* pEntity);
 	int* GetNumberOfPlayer();
 };

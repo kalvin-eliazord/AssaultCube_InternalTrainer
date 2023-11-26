@@ -1,6 +1,5 @@
 #pragma once
 namespace MemManager
 {
-	uintptr_t GetModBaseAddr();
-	Player* GetLocalPlayer();
+	const static uintptr_t modBaseAddr{ (uintptr_t)(GetModuleHandleW(L"ac_client.exe"))};
 };

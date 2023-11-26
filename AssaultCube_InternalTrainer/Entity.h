@@ -2,7 +2,7 @@
 
 struct Vector3 { float x, y, z; };
 
-class Player
+class Entity
 {
 	public:
 		char pad_0000[4]; //0x0000

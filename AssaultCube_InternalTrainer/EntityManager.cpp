@@ -6,31 +6,41 @@ uintptr_t* EntityManager::GetEntityListBaseAddr()
 
 	constexpr uintptr_t entityListOffset{ 0x10f4f8 };
 	
-	return entityListBaseAddr = (uintptr_t*) (MemManager::GetModBaseAddr() + entityListOffset);
+	return entityListBaseAddr = (uintptr_t*) ((uintptr_t)GetModuleHandleW(L"ac_client.exe") + entityListOffset);
 }
 
-Player* EntityManager::GetEntity(int iEntity)
+Entity* EntityManager::GetLocalPlayerAddr()
 {
-	Player* entity{ nullptr };
+	Entity* localPlayerAddr{ nullptr };
 
-	return entity = *(Player**) (*GetEntityListBaseAddr() + iEntity * 4) ;
+	uintptr_t localPlayerOffset{ 0x10f4f4 };
+	uintptr_t modBaseAddr{ (uintptr_t)GetModuleHandleW(L"ac_client.exe") };
+
+	return localPlayerAddr = *(Entity**)(modBaseAddr + localPlayerOffset);
+}
+
+Entity* EntityManager::GetEntity(int iEntity)
+{
+	Entity* entity{ nullptr };
+
+	return entity = *(Entity**) (*EntityManager::GetEntityListBaseAddr() + iEntity * 4) ;
 }
 
 int* EntityManager::GetNumberOfPlayer()
 {
 	constexpr uintptr_t nbOfPlayerOffset{ 0x10f500 };
 
-	return (int*)(MemManager::GetModBaseAddr() + nbOfPlayerOffset);
+	return (int*)((uintptr_t)GetModuleHandleW(L"ac_client.exe") + nbOfPlayerOffset);
 }
 
-bool EntityManager::IsValid(Player* pEntity)
+bool EntityManager::IsValid(Entity* pEntity)
 {
 	// is entity dead
 	if (pEntity->m_health <= 0)
 		return false;
 
-	// is entity same team as LocalPlayer
-	if (pEntity->teamID == MemManager::GetLocalPlayer()->teamID)
+	// is entity same team as Entity
+	if (pEntity->teamID == EntityManager::GetLocalPlayerAddr()->teamID)
 		return false;
 
 	// is entity not loaded

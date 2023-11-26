@@ -1,7 +1,2 @@
-﻿  EntityManager.cpp
-  MemManager.cpp
-  Player.cpp
-  Target.cpp
-  dllmain.cpp
-  Generating Code...
+﻿  dllmain.cpp
   AssaultCube_InternalTrainer.vcxproj -> C:\Users\kalvi\source\repos\AssaultCube_InternalTrainer\Debug\AssaultCube_InternalTrainer.dll
