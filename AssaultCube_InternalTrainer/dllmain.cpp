@@ -1,7 +1,19 @@
 #include "header.h"
 
+using twglSwapBuffers = BOOL (__stdcall *)(HDC hDc);
+
+twglSwapBuffers owglSwapBuffers;
+
+BOOL __stdcall hkwglSwapBuffers(HDC hDc)
+{
+    std::cout << "Swapbuffer hooked! \n";
+
+    return owglSwapBuffers(hDc);
+}
+
 uintptr_t jmpBackAddr{};
-void __declspec(naked) myASMFunc()
+
+void __declspec(naked) GodMod_ASM()
 {
     __asm
     {
@@ -14,15 +26,18 @@ void __declspec(naked) myASMFunc()
         originalCode:
         sub [ebx+4], edi
         mov eax, edi
-        pop edi
         jmp [jmpBackAddr]
     }
 }
 
-bool toHook(BYTE* addrToHook, uintptr_t len, BYTE* myFunc)
+BYTE* toHook(BYTE* addrToHook, uintptr_t len, BYTE* myFunc)
 {
     if (len < 5)
-        return false;
+        return nullptr;
+
+    BYTE* savedByte{ nullptr };
+
+    memcpy(savedByte, addrToHook, len);
 
     DWORD currProtection{};
 
@@ -40,7 +55,12 @@ bool toHook(BYTE* addrToHook, uintptr_t len, BYTE* myFunc)
 
     VirtualProtect(addrToHook, len, currProtection, &currProtection);
 
-    return true;
+    return savedByte;
+}
+
+void cleanFunction(BYTE* savedByte, BYTE* addrToClean, uintptr_t len)
+{
+        
 }
 
 DWORD WINAPI HackThread(HMODULE hModule)
@@ -52,65 +72,35 @@ DWORD WINAPI HackThread(HMODULE hModule)
 
     std::cout << "Assault Cube Internal Trainer by Kalvin" << "\n";
 
-    Entity* localPlayer{ EntityManager::GetLocalPlayerAddr()};
+    Entity* localPlayer{ EntityManager::GetLocalPlayerAddr() };
 
-    float closestDistance{ 1000000.0f };
-    float currentDistance{ NULL };
-    int entityDistIndex{ -1 };
+    // start DETOUR //
+
+    BYTE*     savedByte  { nullptr };
+    BYTE*     addrToHook { (BYTE*)(MemManager::modBaseAddr + 0x29D1F) };
+    uintptr_t hookLen    { 5 };
+
+    jmpBackAddr = (uintptr_t)addrToHook + hookLen;
+
+    savedByte = toHook(addrToHook, hookLen, (BYTE*)GodMod_ASM);
+    
+    if (!savedByte)
+        return -1;
+
+    // end DETOUR // 
+    
+    localPlayer->m_health = 1337;
 
     // Hacking Loop
     while (!GetAsyncKeyState(VK_DELETE) & 1)
     {
-        // HOOKING //ac_client.exe+29D1F 
-
-        BYTE* addrToHook{ (BYTE*) (MemManager::modBaseAddr + 0x29D1F) };
-        uintptr_t hookLen{ 6 };
-
-        jmpBackAddr = (uintptr_t) addrToHook + hookLen;
-
-        if (!toHook(addrToHook, hookLen, (BYTE*)myASMFunc))
-            return -1;
-
-        localPlayer->m_health = 1337;
         localPlayer->assaultRifleAmmo = 1337;
         localPlayer->magPistolAmmo = 1337;
 
-        // AIMBOT //
-        std::vector<Vector3> DistanceTargetList{};
-
-        // iterate all the entities to find the closest 
-        for (int i{ 1 }; i < *EntityManager::GetNumberOfPlayer(); ++i)
-        {
-            Entity* entity{ EntityManager::GetEntity(i) };
-
-            if (!EntityManager::IsValid(entity))
-                continue;
-
-            const Vector3 delta{ Aimbot::GetDelta(entity->m_Coords, localPlayer->m_Coords) };
-                
-            currentDistance = Aimbot::GetMagnitude(delta);
-
-            if (currentDistance < closestDistance && currentDistance != NULL)
-            {
-                closestDistance = currentDistance;
-                entityDistIndex = i;
-            }
-        }
-
-        // error, stop the program
-        if (entityDistIndex == -1)
-            return -1;
-
-        Entity* closestTarget{ EntityManager::GetEntity(entityDistIndex) };
-        const Vector3 targetAngle{ Aimbot::CalculateAngles(closestTarget) };
-
-        // right click to shoot at closest target
-        if (GetAsyncKeyState(VK_RBUTTON))
-        {
-            localPlayer->m_Angles.x = targetAngle.x;
-            localPlayer->m_Angles.y = targetAngle.y;
-        }
+        Aimbot::RunAimbot();
     }
+
+    cleanFunction(savedByte, addrToHook, hookLen);
 
     if (f)
         fclose(f);
