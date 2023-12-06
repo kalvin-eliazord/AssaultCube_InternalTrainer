@@ -1,10 +1,6 @@
 #pragma once
 namespace MemoryChanger
 {
-	void GodMod_ASM();
-	bool Hook(BYTE* addrToHook, uintptr_t len, BYTE* myFunc);
-	void PatchingByte(BYTE* dst, BYTE* src, BYTE dstSize);
-	void NopByte(BYTE* dst, BYTE dstSize);
-
-	static uintptr_t jmpBackAddr{};
+	void PatchingByte(uintptr_t* dst, uintptr_t* src, int size);
+	void NopByte(uintptr_t* dst, int size);
 };

@@ -2,37 +2,45 @@
 
 DWORD WINAPI HackThread(HMODULE hModule)
 {
-    // create a file to open a writtable console 
+    // Create a file to open a writtable console 
     AllocConsole();
     FILE* f;
     freopen_s(&f, "CONOUT$", "w", stdout);
 
     std::cout << "Assault Cube Internal Trainer by Kalvin" << "\n";
 
-    // start DETOUR //
-    BYTE*     decHpAddr    { (BYTE*)(GetModuleHandleW(L"ac_client.exe") + Offset::DecHp) };
-    uintptr_t decHpAddrSize{ 5 };
+    Entity* localPlayer{ EntityManager::GetLocalPlayerPtr() };
+    Hook hook{};
 
-    // NEED TO CREATE A CLASS OF HOOKING CUZ I NEED MULTIPLE JMPBACKADDR TO BE STORED FOR EACH DETOUR
-    MemoryChanger::jmpBackAddr = (uintptr_t)decHpAddr + decHpAddrSize;
-
-    if(!MemoryChanger::Hook(decHpAddr, decHpAddrSize, (BYTE*)MemoryChanger::GodMod_ASM))
-        return -1;
-    // end DETOUR // 
+    // God mod
+    uintptr_t* decHpAddr{ (uintptr_t*)((uintptr_t)GetModuleHandleW(L"ac_client.exe") + Offset::DecHp) };
+    uintptr_t  decHpAddrSize{ 5 };
+    jmpBackAddr = (*decHpAddr + decHpAddrSize);
 
     // Nop byte
-    BYTE*     decAmmoAddr    { (BYTE*)(GetModuleHandleW(L"ac_client.exe") + Offset::DecAmmo) };
-    uintptr_t decAmmoAddrSize{2};
+    uintptr_t* decAmmoAddr    { (uintptr_t*)((uintptr_t)GetModuleHandleW(L"ac_client.exe") + Offset::DecAmmo) };
+    uintptr_t  decAmmoAddrSize{2};
     MemoryChanger::NopByte(decAmmoAddr, decAmmoAddrSize);
 
-    Entity* localPlayer{ EntityManager::GetLocalPlayerPtr() };
-    localPlayer->m_health         = 1337;
-    localPlayer->assaultRifleAmmo = 1337;
-    localPlayer->magPistolAmmo    = 1337;
 
     // Hacking Loop
     while (!GetAsyncKeyState(VK_DELETE) & 1)
-        Aimbot::RunAimbot();
+    {
+        localPlayer->m_health = 1337;
+        // TO DO : actualWeaponTo1337
+        localPlayer->assaultRifleAmmo = 1337;
+
+        // If there is no enemy it will crash
+        if (*(EntityManager::GetNumberOfPlayerPtr) != 0)
+        {
+            // TO FIX (mem no allocated)
+            //hook.StartHooking(decHpAddr, decHpAddrSize, (uintptr_t*)GodMod_ASM);
+
+            Aimbot::RunAimbot();
+        }
+
+        Sleep(5);
+    }
 
     if (f)
         fclose(f);

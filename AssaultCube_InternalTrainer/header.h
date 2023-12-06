@@ -9,3 +9,4 @@
 #include "EntityManager.h"
 #include "Aimbot.h"
 #include "MemoryChanger.h"
+#include "Hook.h"

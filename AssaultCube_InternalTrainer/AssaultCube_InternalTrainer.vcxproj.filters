@@ -15,9 +15,6 @@
     <Filter Include="Aimbot">
       <UniqueIdentifier>{ddb542a8-8dc4-486a-aa52-a6da9fe0f5d1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Target">
-      <UniqueIdentifier>{291debe0-6e54-4bb4-b42d-0f30af8722db}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Entity">
       <UniqueIdentifier>{67d6ad1b-db31-48af-9cc5-b4284a690603}</UniqueIdentifier>
     </Filter>
@@ -26,6 +23,9 @@
     </Filter>
     <Filter Include="Offset">
       <UniqueIdentifier>{b845744b-2dec-4aae-8595-e548de878e59}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Hook">
+      <UniqueIdentifier>{666790fc-cd97-43aa-9463-c0f373af5d01}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -44,17 +44,14 @@
     <ClInclude Include="Aimbot.h">
       <Filter>Aimbot</Filter>
     </ClInclude>
-    <ClInclude Include="Target.h">
-      <Filter>Target</Filter>
-    </ClInclude>
     <ClInclude Include="MemoryChanger.h">
       <Filter>MemoryChanger</Filter>
     </ClInclude>
+    <ClInclude Include="Hook.h">
+      <Filter>Hook</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Entity.cpp">
-      <Filter>Entity</Filter>
-    </ClCompile>
     <ClCompile Include="EntityManager.cpp">
       <Filter>EntityManager</Filter>
     </ClCompile>
@@ -66,6 +63,9 @@
     </ClCompile>
     <ClCompile Include="MemoryChanger.cpp">
       <Filter>MemoryChanger</Filter>
+    </ClCompile>
+    <ClCompile Include="Hook.cpp">
+      <Filter>Hook</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

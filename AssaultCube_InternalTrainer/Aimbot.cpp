@@ -33,7 +33,7 @@ void Aimbot::RunAimbot()
 
     // error, stop the program
     if (entityDistIndex == -1)
-        std::cout << "No target found. \n";
+        std::cout << "No target found. \r";
 
     if (bTargetFound)
     {
