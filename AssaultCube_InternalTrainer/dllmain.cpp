@@ -1,6 +1,5 @@
 #include "header.h"
 
-
 DWORD WINAPI HackThread(HMODULE hModule)
 {
     // create a file to open a writtable console 
@@ -9,8 +8,6 @@ DWORD WINAPI HackThread(HMODULE hModule)
     freopen_s(&f, "CONOUT$", "w", stdout);
 
     std::cout << "Assault Cube Internal Trainer by Kalvin" << "\n";
-
-    Entity* localPlayer{ EntityManager::GetLocalPlayerPtr() };
 
     // start DETOUR //
     BYTE*     decHpAddr    { (BYTE*)(GetModuleHandleW(L"ac_client.exe") + Offset::DecHp) };
@@ -21,23 +18,21 @@ DWORD WINAPI HackThread(HMODULE hModule)
 
     if(!MemoryChanger::Hook(decHpAddr, decHpAddrSize, (BYTE*)MemoryChanger::GodMod_ASM))
         return -1;
-    
-    // Noping byte
+    // end DETOUR // 
+
+    // Nop byte
     BYTE*     decAmmoAddr    { (BYTE*)(GetModuleHandleW(L"ac_client.exe") + Offset::DecAmmo) };
     uintptr_t decAmmoAddrSize{2};
     MemoryChanger::NopByte(decAmmoAddr, decAmmoAddrSize);
 
-    // end DETOUR // 
-
-    localPlayer->m_health = 1337;
+    Entity* localPlayer{ EntityManager::GetLocalPlayerPtr() };
+    localPlayer->m_health         = 1337;
     localPlayer->assaultRifleAmmo = 1337;
-    localPlayer->magPistolAmmo = 1337;
+    localPlayer->magPistolAmmo    = 1337;
 
     // Hacking Loop
     while (!GetAsyncKeyState(VK_DELETE) & 1)
-    {
         Aimbot::RunAimbot();
-    }
 
     if (f)
         fclose(f);
@@ -54,7 +49,12 @@ BOOL APIENTRY DllMain( HMODULE hModule,
                      )
 {
     if (ul_reason_for_call == DLL_PROCESS_ATTACH)
-        CloseHandle(CreateThread(NULL, NULL, LPTHREAD_START_ROUTINE(HackThread), hModule, NULL, nullptr));
+    {
+        HANDLE hackThread{ (CreateThread(NULL, NULL, LPTHREAD_START_ROUTINE(HackThread), hModule, NULL, nullptr)) };
+
+        if (hackThread)
+            CloseHandle(hackThread);
+    }
 
     return TRUE;
 }
