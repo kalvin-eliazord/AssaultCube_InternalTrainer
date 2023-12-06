@@ -1,67 +1,5 @@
 #include "header.h"
 
-using twglSwapBuffers = BOOL (__stdcall *)(HDC hDc);
-
-twglSwapBuffers owglSwapBuffers;
-
-BOOL __stdcall hkwglSwapBuffers(HDC hDc)
-{
-    std::cout << "Swapbuffer hooked! \n";
-
-    return owglSwapBuffers(hDc);
-}
-
-uintptr_t jmpBackAddr{};
-
-void __declspec(naked) GodMod_ASM()
-{
-    __asm
-    {
-        mov eax, [0x50f4f4]
-        add eax, 0xF4
-        cmp eax, ebx 
-        jne originalCode
-        // nullifying damage taken if localPlayer
-        mov edi, 0
-        originalCode:
-        sub [ebx+4], edi
-        mov eax, edi
-        jmp [jmpBackAddr]
-    }
-}
-
-BYTE* toHook(BYTE* addrToHook, uintptr_t len, BYTE* myFunc)
-{
-    if (len < 5)
-        return nullptr;
-
-    BYTE* savedByte{ nullptr };
-
-    memcpy(savedByte, addrToHook, len);
-
-    DWORD currProtection{};
-
-    VirtualProtect(addrToHook, len, PAGE_EXECUTE_READWRITE, &currProtection);
-
-    memset(addrToHook, 0x90, len);
-
-    //overwrite to JMP 
-    *addrToHook = 0xE9;
-
-    constexpr uintptr_t jmpSyze{ 5 };
-    const uintptr_t addrToJump{ ((uintptr_t)myFunc - (uintptr_t)addrToHook) - jmpSyze };
-        
-    *(uintptr_t*) (addrToHook + 1) = addrToJump;
-
-    VirtualProtect(addrToHook, len, currProtection, &currProtection);
-
-    return savedByte;
-}
-
-void cleanFunction(BYTE* savedByte, BYTE* addrToClean, uintptr_t len)
-{
-        
-}
 
 DWORD WINAPI HackThread(HMODULE hModule)
 {
@@ -72,35 +10,34 @@ DWORD WINAPI HackThread(HMODULE hModule)
 
     std::cout << "Assault Cube Internal Trainer by Kalvin" << "\n";
 
-    Entity* localPlayer{ EntityManager::GetLocalPlayerAddr() };
+    Entity* localPlayer{ EntityManager::GetLocalPlayerPtr() };
 
     // start DETOUR //
+    BYTE*     decHpAddr    { (BYTE*)(GetModuleHandleW(L"ac_client.exe") + Offset::DecHp) };
+    uintptr_t decHpAddrSize{ 5 };
 
-    BYTE*     savedByte  { nullptr };
-    BYTE*     addrToHook { (BYTE*)(MemManager::modBaseAddr + 0x29D1F) };
-    uintptr_t hookLen    { 5 };
+    // NEED TO CREATE A CLASS OF HOOKING CUZ I NEED MULTIPLE JMPBACKADDR TO BE STORED FOR EACH DETOUR
+    MemoryChanger::jmpBackAddr = (uintptr_t)decHpAddr + decHpAddrSize;
 
-    jmpBackAddr = (uintptr_t)addrToHook + hookLen;
-
-    savedByte = toHook(addrToHook, hookLen, (BYTE*)GodMod_ASM);
-    
-    if (!savedByte)
+    if(!MemoryChanger::Hook(decHpAddr, decHpAddrSize, (BYTE*)MemoryChanger::GodMod_ASM))
         return -1;
+    
+    // Noping byte
+    BYTE*     decAmmoAddr    { (BYTE*)(GetModuleHandleW(L"ac_client.exe") + Offset::DecAmmo) };
+    uintptr_t decAmmoAddrSize{2};
+    MemoryChanger::NopByte(decAmmoAddr, decAmmoAddrSize);
 
     // end DETOUR // 
-    
+
     localPlayer->m_health = 1337;
+    localPlayer->assaultRifleAmmo = 1337;
+    localPlayer->magPistolAmmo = 1337;
 
     // Hacking Loop
     while (!GetAsyncKeyState(VK_DELETE) & 1)
     {
-        localPlayer->assaultRifleAmmo = 1337;
-        localPlayer->magPistolAmmo = 1337;
-
         Aimbot::RunAimbot();
     }
-
-    cleanFunction(savedByte, addrToHook, hookLen);
 
     if (f)
         fclose(f);

@@ -4,7 +4,7 @@ void Aimbot::RunAimbot()
 {
     // start AIMBOT //
 
-    Entity* localPlayer{ EntityManager::GetLocalPlayerAddr() };
+    Entity* localPlayer{ EntityManager::GetLocalPlayerPtr() };
 
     bool  bTargetFound   { false };
     float closestDistance{ 1000000.0f };
@@ -12,9 +12,9 @@ void Aimbot::RunAimbot()
     int   entityDistIndex{ -1 };
 
       // iterate all the entities to find the closest 
-    for (int i{ 1 }; i < *EntityManager::GetNumberOfPlayer(); ++i)
+    for (int i{ 1 }; i < *EntityManager::GetNumberOfPlayerPtr(); ++i)
     {
-        Entity* entity{ EntityManager::GetEntity(i) };
+        Entity* entity{ EntityManager::GetEntityPtr(i) };
 
         if (!EntityManager::IsValid(entity))
             continue;
@@ -37,7 +37,7 @@ void Aimbot::RunAimbot()
 
     if (bTargetFound)
     {
-        Entity* closestTarget{ EntityManager::GetEntity(entityDistIndex) };
+        Entity* closestTarget{ EntityManager::GetEntityPtr(entityDistIndex) };
         const Vector3 targetAngle{ Aimbot::CalculateAngles(closestTarget) };
 
         // right click to shoot at closest target
@@ -54,7 +54,7 @@ Vector3 Aimbot::CalculateAngles(Entity* pEntity)
 {
 	Vector3 calculatedAngles{};
 
-	Entity* localPlayer{ EntityManager::GetLocalPlayerAddr() };
+	Entity* localPlayer{ EntityManager::GetLocalPlayerPtr() };
 
 	const Vector3 delta{ GetDelta(localPlayer->m_HeadCoords, pEntity->m_HeadCoords) };
 

@@ -4,8 +4,9 @@
 #include <iostream>
 #include <cstdio>
 #include <vector>
-#include "MemManager.h"
+#include "Offset.h"
 #include "Entity.h"
 #include "EntityManager.h"
 #include "Aimbot.h"
 #include "Target.h"
+#include "MemoryChanger.h"

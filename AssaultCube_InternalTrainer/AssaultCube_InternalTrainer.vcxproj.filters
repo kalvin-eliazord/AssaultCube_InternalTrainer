@@ -8,9 +8,6 @@
     <Filter Include="EntityManager">
       <UniqueIdentifier>{ab45114b-71ae-4284-8c5f-c86f50004608}</UniqueIdentifier>
     </Filter>
-    <Filter Include="MemManager">
-      <UniqueIdentifier>{b845744b-2dec-4aae-8595-e548de878e59}</UniqueIdentifier>
-    </Filter>
     <Filter Include="main">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
@@ -24,6 +21,12 @@
     <Filter Include="Entity">
       <UniqueIdentifier>{67d6ad1b-db31-48af-9cc5-b4284a690603}</UniqueIdentifier>
     </Filter>
+    <Filter Include="MemoryChanger">
+      <UniqueIdentifier>{d001ce21-f6c1-4386-b771-04409e63fafc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Offset">
+      <UniqueIdentifier>{b845744b-2dec-4aae-8595-e548de878e59}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Entity.h">
@@ -35,14 +38,17 @@
     <ClInclude Include="EntityManager.h">
       <Filter>EntityManager</Filter>
     </ClInclude>
-    <ClInclude Include="MemManager.h">
-      <Filter>MemManager</Filter>
+    <ClInclude Include="Offset.h">
+      <Filter>Offset</Filter>
     </ClInclude>
     <ClInclude Include="Aimbot.h">
       <Filter>Aimbot</Filter>
     </ClInclude>
     <ClInclude Include="Target.h">
       <Filter>Target</Filter>
+    </ClInclude>
+    <ClInclude Include="MemoryChanger.h">
+      <Filter>MemoryChanger</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -52,17 +58,14 @@
     <ClCompile Include="EntityManager.cpp">
       <Filter>EntityManager</Filter>
     </ClCompile>
-    <ClCompile Include="MemManager.cpp">
-      <Filter>MemManager</Filter>
-    </ClCompile>
     <ClCompile Include="Aimbot.cpp">
       <Filter>Aimbot</Filter>
     </ClCompile>
-    <ClCompile Include="Target.cpp">
-      <Filter>Target</Filter>
-    </ClCompile>
     <ClCompile Include="dllmain.cpp">
       <Filter>main</Filter>
+    </ClCompile>
+    <ClCompile Include="MemoryChanger.cpp">
+      <Filter>MemoryChanger</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
