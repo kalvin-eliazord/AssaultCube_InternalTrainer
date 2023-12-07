@@ -11,7 +11,7 @@ BOOL __stdcall hkwglSwapBuffers(HDC hDc)
     return owglSwapBuffers(hDc);
 }
 
-void __declspec(naked) GodMod_ASM()
+void __declspec(naked) ASM_NoBulletDamage()
 {
     __asm
     {
@@ -25,29 +25,59 @@ void __declspec(naked) GodMod_ASM()
         originalCode:
         sub[ebx + 4], edi
         mov eax, edi
-        jmp [jmpBackAddr]
+        jmp [noBulletDmgJmpBack]
     }
 }
 
-bool Hook::StartHooking(uintptr_t* addrToHook, int size, uintptr_t* myFunc)
+void __declspec(naked) ASM_UnlimitedRifleAmmo()
 {
-    if (size < 5)
-        return false;
+    __asm
+    {
+        mov eax, [0x50f4f4]
+        add eax, 0x150
+        cmp esi, eax
+        jne originalcode
+        //instruction to decrement ammo is removed if localPlayer shooting
+        push edi
+        mov edi, [esp + 14]
+        jmp [unlimitedRAmmoJmpBack]
+        originalcode :
+        dec[esi]
+        push edi
+        mov edi, [esp + 14]
+        jmp [unlimitedRAmmoJmpBack]
+    }
+}
 
+uintptr_t GetJmpBackAddr( uintptr_t* pAddrToHook, const int pSize)
+{
+    if (pSize < 5)
+        return NULL;
+
+    return (uintptr_t)pAddrToHook + (uintptr_t)pSize;
+}
+
+Hook::Hook(uintptr_t* pAddrToHook, const int pSize = 5)
+    : addrToHook{ pAddrToHook }
+    , size{ pSize }
+{}
+
+bool Hook::StartHooking(uintptr_t* myFunc)
+{
     DWORD currProtection{};
-    VirtualProtect(addrToHook, size, PAGE_EXECUTE_READWRITE, &currProtection);
+    VirtualProtect(this->addrToHook, this->size, PAGE_EXECUTE_READWRITE, &currProtection);
 
-    memset(addrToHook, 0x90, size);
+    memset(this->addrToHook, 0x90, this->size);
 
     //overwrite to JMP 
     *addrToHook = 0xE9;
 
     constexpr uintptr_t jmpSyze{ 5 };
-    const     uintptr_t addrToJump{ ((uintptr_t)myFunc - (uintptr_t)addrToHook) - (uintptr_t)jmpSyze };
+    const     uintptr_t addrToJump{ ((uintptr_t)myFunc - (uintptr_t)this->addrToHook) - jmpSyze };
 
-    *(uintptr_t*)(addrToHook + 1) = addrToJump;
+    *(uintptr_t*)(this->addrToHook + 1) = addrToJump;
 
-    VirtualProtect(addrToHook, size, currProtection, &currProtection);
+    VirtualProtect(this->addrToHook, this->size, currProtection, &currProtection);
 
     return true;
 }

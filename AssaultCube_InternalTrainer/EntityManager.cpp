@@ -4,14 +4,14 @@ uintptr_t* EntityManager::GetEntityListPtr()
 {
 	uintptr_t* entityListBaseAddr{ nullptr };
 	
-	return entityListBaseAddr = (uintptr_t*)((uintptr_t)GetModuleHandleW(L"ac_client.exe") + Offset::EntityList);
+	return entityListBaseAddr = (uintptr_t*)(Offset::ModBaseAddr + Offset::EntityList);
 }
 
 Entity* EntityManager::GetLocalPlayerPtr()
 {
 	Entity* localPlayerAddr{ nullptr };
 
-	return localPlayerAddr = *(Entity**)((uintptr_t)GetModuleHandleW(L"ac_client.exe") + Offset::LocalPlayer);
+	return localPlayerAddr = *(Entity**)(Offset::ModBaseAddr + Offset::LocalPlayer);
 }
 
 Entity* EntityManager::GetEntityPtr(int iteratorEnt)
@@ -23,7 +23,7 @@ Entity* EntityManager::GetEntityPtr(int iteratorEnt)
 
 int* EntityManager::GetNumberOfPlayerPtr()
 {
-	return (int*)((uintptr_t)GetModuleHandleW(L"ac_client.exe") + Offset::NbPlayer);
+	return (int*)(Offset::ModBaseAddr + Offset::NbPlayer);
 }
 
 bool EntityManager::IsValid(Entity* pEntity)

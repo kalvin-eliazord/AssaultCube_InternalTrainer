@@ -10,18 +10,20 @@ DWORD WINAPI HackThread(HMODULE hModule)
     std::cout << "Assault Cube Internal Trainer by Kalvin" << "\n";
 
     Entity* localPlayer{ EntityManager::GetLocalPlayerPtr() };
-    Hook hook{};
 
-    // God mod
-    uintptr_t* decHpAddr{ (uintptr_t*)((uintptr_t)GetModuleHandleW(L"ac_client.exe") + Offset::DecHp) };
-    uintptr_t  decHpAddrSize{ 5 };
-    jmpBackAddr = (*decHpAddr + decHpAddrSize);
+    // No Bullet Damage
+    uintptr_t* decHpAddr    { (uintptr_t*)(Offset::ModBaseAddr + Offset::DecHp) };
+    const uintptr_t decHpAddrSize{ 5 };
+    noBulletDmgJmpBack = GetJmpBackAddr(decHpAddr, decHpAddrSize);
+    Hook noBulletDamage(decHpAddr, decHpAddrSize);
+    noBulletDamage.StartHooking((uintptr_t*)ASM_NoBulletDamage);
 
-    // Nop byte
-    uintptr_t* decAmmoAddr    { (uintptr_t*)((uintptr_t)GetModuleHandleW(L"ac_client.exe") + Offset::DecAmmo) };
-    uintptr_t  decAmmoAddrSize{2};
-    MemoryChanger::NopByte(decAmmoAddr, decAmmoAddrSize);
-
+    // Unlimited Rifle Ammo
+    uintptr_t* decAmmoAddr { (uintptr_t*)(Offset::ModBaseAddr + Offset::DecAmmo) };
+    const uintptr_t decAmmoAddrSize{2};
+    unlimitedRAmmoJmpBack = GetJmpBackAddr(decHpAddr, decHpAddrSize);
+    Hook unlimitedRifleAmmo(decAmmoAddr, decAmmoAddrSize);
+    unlimitedRifleAmmo.StartHooking((uintptr_t*)ASM_UnlimitedRifleAmmo);
 
     // Hacking Loop
     while (!GetAsyncKeyState(VK_DELETE) & 1)
@@ -30,15 +32,7 @@ DWORD WINAPI HackThread(HMODULE hModule)
         // TO DO : actualWeaponTo1337
         localPlayer->assaultRifleAmmo = 1337;
 
-        // If there is no enemy it will crash
-        if (*(EntityManager::GetNumberOfPlayerPtr) != 0)
-        {
-            // TO FIX (mem no allocated)
-            //hook.StartHooking(decHpAddr, decHpAddrSize, (uintptr_t*)GodMod_ASM);
-
-            Aimbot::RunAimbot();
-        }
-
+        Aimbot::RunAimbot();
         Sleep(5);
     }
 
