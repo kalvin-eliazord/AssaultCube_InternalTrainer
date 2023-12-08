@@ -1,7 +1,7 @@
 ﻿  Aimbot.cpp
+  EntityManager.cpp
   Hook.cpp
   MemoryChanger.cpp
   dllmain.cpp
-  EntityManager.cpp
   Generating Code...
   AssaultCube_InternalTrainer.vcxproj -> C:\Users\kalvi\source\repos\AssaultCube_InternalTrainer\Debug\AssaultCube_InternalTrainer.dll

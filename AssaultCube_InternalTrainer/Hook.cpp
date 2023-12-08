@@ -1,83 +1,74 @@
 #include "header.h"
 
 // TODO: trampoline hook 
-using twglSwapBuffers = BOOL(__stdcall*)(HDC hDc);
+using tWglSwapBuffers = BOOL(__stdcall*)(HDC hDc);
 
-twglSwapBuffers owglSwapBuffers;
+tWglSwapBuffers oWglSwapBuffers;
 
-BOOL __stdcall hkwglSwapBuffers(HDC hDc)
+BOOL __stdcall hkWglSwapBuffers(HDC hDc)
 {
     std::cout << "Swapbuffer hooked! \n";
-    return owglSwapBuffers(hDc);
+    return oWglSwapBuffers(hDc);
 }
 
-void __declspec(naked) ASM_NoBulletDamage()
-{
-    __asm
-    {
-        // localPlayer Addr stored in eax
-        mov eax, [0x50f4f4]
-        add eax, 0xF4
-        cmp eax, ebx
-        jne originalCode
-        // nullifying damage taken if localPlayer
-        mov edi, 0
-        originalCode:
-        sub[ebx + 4], edi
-        mov eax, edi
-        jmp [noBulletDmgJmpBack]
-    }
-}
+Hook::Hook(uintptr_t* pSrc, const int pSize = 5)
+    : src{ pSrc }
+    , size{ pSize }
+{}
 
-void __declspec(naked) ASM_UnlimitedRifleAmmo()
-{
-    __asm
-    {
-        mov eax, [0x50f4f4]
-        add eax, 0x150
-        cmp esi, eax
-        jne originalcode
-        //instruction to decrement ammo is removed if localPlayer shooting
-        push edi
-        mov edi, [esp + 14]
-        jmp [unlimitedRAmmoJmpBack]
-        originalcode :
-        dec[esi]
-        push edi
-        mov edi, [esp + 14]
-        jmp [unlimitedRAmmoJmpBack]
-    }
-}
-
-uintptr_t GetJmpBackAddr( uintptr_t* pAddrToHook, const int pSize)
+uintptr_t Hook::GetJmpBackAddr(uintptr_t* pSrc, const int pSize)
 {
     if (pSize < 5)
         return NULL;
 
-    return (uintptr_t)pAddrToHook + (uintptr_t)pSize;
+    return (uintptr_t)this->src + (uintptr_t)this->size;
 }
 
-Hook::Hook(uintptr_t* pAddrToHook, const int pSize = 5)
-    : addrToHook{ pAddrToHook }
-    , size{ pSize }
-{}
-
-bool Hook::StartHooking(uintptr_t* myFunc)
+Hook::~Hook()
 {
-    DWORD currProtection{};
-    VirtualProtect(this->addrToHook, this->size, PAGE_EXECUTE_READWRITE, &currProtection);
+    this->StopDetour();
+    delete this->src;
+}
 
-    memset(this->addrToHook, 0x90, this->size);
+uintptr_t* Hook::GetSrc()
+{
+    return this->src;
+}
 
-    //overwrite to JMP 
-    *addrToHook = 0xE9;
+int Hook::GetSize()
+{
+    return this->size;
+}
+
+void Hook::DetourTo(uintptr_t* pDst)
+{
+    DWORD oldProtection{};
+    VirtualProtect(this->src, this->size, PAGE_EXECUTE_READWRITE, &oldProtection);
+
+    // saving the stolen bytes
+    this->stolenBytes = new uintptr_t[this->size];
+    memcpy(this->stolenBytes, this->src, this->size);
+
+    // Nop the page
+    memset(this->src, 0x90, this->size);
 
     constexpr uintptr_t jmpSyze{ 5 };
-    const     uintptr_t addrToJump{ ((uintptr_t)myFunc - (uintptr_t)this->addrToHook) - jmpSyze };
+    const     uintptr_t dstAddrOffset{ ((uintptr_t)pDst - (uintptr_t)this->src) - jmpSyze };
 
-    *(uintptr_t*)(this->addrToHook + 1) = addrToJump;
+    // writting JMP
+    *src = 0xE9;
 
-    VirtualProtect(this->addrToHook, this->size, currProtection, &currProtection);
+    // writting addr to jump
+    *(uintptr_t*)((uintptr_t)this->src + 1) = dstAddrOffset;
 
-    return true;
+    VirtualProtect(this->src, this->size, oldProtection, &oldProtection);
+}
+
+void Hook::StopDetour()
+{
+    if (this->stolenBytes != nullptr)
+    {
+        MemoryChanger::PatchingPage(this->src, this->stolenBytes, this->size);
+        delete[] this->stolenBytes;
+    }
 }

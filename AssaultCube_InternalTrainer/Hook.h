@@ -2,18 +2,17 @@
 class Hook
 {
 private:
-	uintptr_t* addrToHook{};
+	uintptr_t* src{};
+	uintptr_t* stolenBytes{nullptr};
 	const int size{};
 
 public:
-	Hook(uintptr_t* pAddrToHook, const int pSize);
+	Hook(uintptr_t* pSrc, const int pSize);
+	~Hook();
 
-	bool StartHooking(uintptr_t* myFunc);
-	bool StopHooking();
+	uintptr_t* GetSrc();
+	int GetSize();
+	void DetourTo(uintptr_t* pDst);
+	void StopDetour();
+	uintptr_t GetJmpBackAddr(uintptr_t* pSrc, const int pSize = 5);
 };
-
-static uintptr_t noBulletDmgJmpBack;
-void ASM_NoBulletDamage();
-static uintptr_t unlimitedRAmmoJmpBack;
-void ASM_UnlimitedRifleAmmo();
-uintptr_t GetJmpBackAddr(uintptr_t* pAddrToHook, const int pSize = 5);

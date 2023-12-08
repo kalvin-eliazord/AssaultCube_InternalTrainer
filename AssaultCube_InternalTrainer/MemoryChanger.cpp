@@ -1,21 +1,21 @@
 #include "header.h"
 
-void MemoryChanger::PatchingByte(uintptr_t* dst, uintptr_t* src, int size)
+void MemoryChanger::PatchingPage(uintptr_t* pSrc, uintptr_t* pDst, int pSize)
 {
     DWORD oldProtection{};
-    VirtualProtect(dst, size, PAGE_EXECUTE_READWRITE, &oldProtection);
+    VirtualProtect(pSrc, pSize, PAGE_EXECUTE_READWRITE, &oldProtection);
 
-    memcpy(dst, src, size);
+    memcpy(pSrc, pDst, pSize);
 
-    VirtualProtect(dst, size, oldProtection, &oldProtection);
+    VirtualProtect(pSrc, pSize, oldProtection, &oldProtection);
 }
 
-void MemoryChanger::NopByte(uintptr_t* dst, int size)
+void MemoryChanger::NopPage(uintptr_t* pSrc, int pSize)
 {
-    BYTE* nopArray = new BYTE[size];
-    memset(nopArray, 0x90, size);
+    BYTE* nopArray = new BYTE[pSize];
+    memset(nopArray, 0x90, pSize);
 
-    PatchingByte(dst, (uintptr_t*)nopArray, size);
+    PatchingPage(pSrc, (uintptr_t*)nopArray, pSize);
 
     delete[] nopArray;
 }
