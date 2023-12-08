@@ -1,25 +1,27 @@
 #include "header.h"
 
-uintptr_t noBulletDmgJmpBack{};
+uintptr_t jmpBackAddrNoBulletDmg{};
 void __declspec(naked) ASM_NoBulletDamage()
 {
     __asm
     {
         // localPlayer Addr stored in eax
-        mov eax, [0x50f4f4]
-        add eax, 0xF4
-        cmp eax, ebx
+        mov eax, 0x50f4f4
+        // then edi
+        mov edi, [eax]
+        add edi, 0xF4
+        cmp edi, ebx
         jne originalCode
         // nullifying damage taken if localPlayer
         mov edi, 0
         originalCode:
         sub[ebx + 0x4], edi
             mov eax, edi
-            jmp[noBulletDmgJmpBack]
+            jmp[jmpBackAddrNoBulletDmg]
     }
 }
 
-uintptr_t unlimitedRAmmoJmpBack{};
+uintptr_t jmpBackAddrRifleAmmo{};
 void __declspec(naked) ASM_UnlimitedRifleAmmo()
 {
     __asm
@@ -36,12 +38,12 @@ void __declspec(naked) ASM_UnlimitedRifleAmmo()
         // "dec [esi]" instruction is removed if localPlayer shooting
         push edi
         mov edi, [esp + 0x14]
-        jmp[unlimitedRAmmoJmpBack]
+        jmp[jmpBackAddrRifleAmmo]
         originalcode :
         dec[esi]
             push edi
             mov edi, [esp + 0x14]
-            jmp[unlimitedRAmmoJmpBack]
+            jmp[jmpBackAddrRifleAmmo]
     }
 }
 
@@ -65,11 +67,11 @@ DWORD WINAPI HackThread(HMODULE hModule)
 
     // No Bullet Damage Detour
     Hook hkNoBulletDamage((uintptr_t*)(Offset::ModBaseAddr + Offset::DecHp),5);
-    noBulletDmgJmpBack = hkNoBulletDamage.GetJmpBackAddr(hkNoBulletDamage.GetSrc(), hkNoBulletDamage.GetSize());
+    jmpBackAddrNoBulletDmg = hkNoBulletDamage.GetJmpBackAddr();
 
     // Unlimited Rifle Ammo Detour
     Hook hkUnlimitedRifleAmmo((uintptr_t*)(Offset::ModBaseAddr + Offset::DecAmmo), 7);
-    unlimitedRAmmoJmpBack = hkUnlimitedRifleAmmo.GetJmpBackAddr(hkUnlimitedRifleAmmo.GetSrc(), hkUnlimitedRifleAmmo.GetSize());
+    jmpBackAddrRifleAmmo = hkUnlimitedRifleAmmo.GetJmpBackAddr();
 
     // Hacking Loop
     while (!GetAsyncKeyState(VK_DELETE) & 1)

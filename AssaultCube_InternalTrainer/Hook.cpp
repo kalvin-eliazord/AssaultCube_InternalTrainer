@@ -16,14 +16,6 @@ Hook::Hook(uintptr_t* pSrc, const int pSize = 5)
     , size{ pSize }
 {}
 
-uintptr_t Hook::GetJmpBackAddr(uintptr_t* pSrc, const int pSize)
-{
-    if (pSize < 5)
-        return NULL;
-
-    return (uintptr_t)this->src + (uintptr_t)this->size;
-}
-
 Hook::~Hook()
 {
     this->StopDetour();
@@ -71,4 +63,9 @@ void Hook::StopDetour()
         MemoryChanger::PatchingPage(this->src, this->stolenBytes, this->size);
         delete[] this->stolenBytes;
     }
+}
+
+uintptr_t Hook::GetJmpBackAddr()
+{
+    return (uintptr_t) this->src + this->size;
 }

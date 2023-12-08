@@ -7,6 +7,8 @@ private:
 	const int size{};
 
 public:
+	void ASM_NoBulletDamage();
+	void ASM_UnlimitedRifleAmmo();
 	Hook(uintptr_t* pSrc, const int pSize);
 	~Hook();
 
@@ -14,5 +16,5 @@ public:
 	int GetSize();
 	void DetourTo(uintptr_t* pDst);
 	void StopDetour();
-	uintptr_t GetJmpBackAddr(uintptr_t* pSrc, const int pSize = 5);
+	uintptr_t GetJmpBackAddr();
 };

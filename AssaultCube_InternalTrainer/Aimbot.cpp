@@ -47,6 +47,8 @@ void Aimbot::RunAimbot()
             localPlayer->m_Angles.y = targetAngle.y;
         }
     }
+
+    delete localPlayer;
     // end AIMBOT //
 }
 
@@ -76,6 +78,8 @@ Vector3 Aimbot::CalculateAngles(Entity* pEntity)
 
 	calculatedAngles.y = std::clamp(calculatedAngles.y, -90.0f, 90.0f);
 	
+    delete localPlayer;
+
 	return calculatedAngles;
 }
 
