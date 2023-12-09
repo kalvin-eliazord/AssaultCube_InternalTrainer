@@ -5,54 +5,51 @@ void Aimbot::RunAimbot()
     // start AIMBOT //
 
     Entity* localPlayer{ EntityManager::GetLocalPlayerPtr() };
-
-    bool  bTargetFound   { false };
     float closestDistance{ 1000000.0f };
     float currentDistance{ NULL };
-    int   entityDistIndex{ -1 };
+    int   closestEntityIndex{ -1 };
 
-      // iterate all the entities to find the closest 
+     // start at 1 because the first iteration is equal to NULL
     for (int i{ 1 }; i < *EntityManager::GetNumberOfPlayerPtr(); ++i)
     {
-        Entity* entity{ EntityManager::GetEntityPtr(i) };
+        Entity* iEntity{ EntityManager::GetEntityPtr(i) };
 
-        if (!EntityManager::IsValid(entity))
+        if (!EntityManager::IsValid(iEntity))
             continue;
 
-        const Vector3 delta{ Aimbot::GetDelta(entity->m_Coords, localPlayer->m_Coords) };
+        const Vector3 delta{ Aimbot::GetDelta(iEntity->m_Coords, localPlayer->m_Coords) };
 
         currentDistance = Aimbot::GetMagnitude(delta);
 
         if (currentDistance < closestDistance && currentDistance != NULL)
         {
             closestDistance = currentDistance;
-            entityDistIndex = i;
-            bTargetFound    = true;
+            closestEntityIndex = i;
         }
     }
 
-    // error, stop the program
-    if (entityDistIndex == -1)
-        std::cout << "No target found. \r";
-
-    if (bTargetFound)
+    // error
+    if (closestEntityIndex == -1)
+        std::cout << "No target found. \t \r";
+    else
     {
-        Entity* closestTarget{ EntityManager::GetEntityPtr(entityDistIndex) };
-        const Vector3 targetAngle{ Aimbot::CalculateAngles(closestTarget) };
+        Entity* closestEntity{ EntityManager::GetEntityPtr(closestEntityIndex) };
+        const Vector3 entityAngles{ Aimbot::CalculateAnglesOf(closestEntity) };
 
-        // right click to shoot at closest target
+        std::cout << "Target is: " << closestEntity->name << "\r";
+
+        // right click to aim at the closest target
         if (GetAsyncKeyState(VK_RBUTTON))
         {
-            localPlayer->m_Angles.x = targetAngle.x;
-            localPlayer->m_Angles.y = targetAngle.y;
+            localPlayer->m_Angles.x = entityAngles.x;
+            localPlayer->m_Angles.y = entityAngles.y;
         }
     }
 
-    delete localPlayer;
     // end AIMBOT //
 }
 
-Vector3 Aimbot::CalculateAngles(Entity* pEntity)
+Vector3 Aimbot::CalculateAnglesOf(Entity* pEntity)
 {
 	Vector3 calculatedAngles{};
 
@@ -78,8 +75,6 @@ Vector3 Aimbot::CalculateAngles(Entity* pEntity)
 
 	calculatedAngles.y = std::clamp(calculatedAngles.y, -90.0f, 90.0f);
 	
-    delete localPlayer;
-
 	return calculatedAngles;
 }
 

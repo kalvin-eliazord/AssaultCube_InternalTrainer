@@ -7,8 +7,6 @@ private:
 	const int size{};
 
 public:
-	void ASM_NoBulletDamage();
-	void ASM_UnlimitedRifleAmmo();
 	Hook(uintptr_t* pSrc, const int pSize);
 	~Hook();
 

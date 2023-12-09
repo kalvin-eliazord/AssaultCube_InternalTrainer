@@ -54,16 +54,16 @@ DWORD WINAPI HackThread(HMODULE hModule)
     FILE* f;
     freopen_s(&f, "CONOUT$", "w", stdout);
 
-    std::cout << "Assault Cube Internal Trainer by Kalvin" << "\n";
-
-    Entity* localPlayer{ EntityManager::GetLocalPlayerPtr() };
+    std::cout << ">> Assault Cube Internal Hack by Kalvin << \n";
 
     // Cheats available
-    bool bNoBulletDamage    { false };
+    bool bNoBulletDamage{ false };
     bool bUnlimitedRifleAmmo{ false };
-    bool bFreezingHealth    { false };
-    bool bFreezingRifleAmmo { false };
-    bool bAimbot            { false };
+    bool bFreezingHealth{ false };
+    bool bFreezingRifleAmmo{ false };
+    bool bAimbot{ false };
+
+    Entity* localPlayer{ EntityManager::GetLocalPlayerPtr() };
 
     // No Bullet Damage Detour
     Hook hkNoBulletDamage((uintptr_t*)(Offset::ModBaseAddr + Offset::DecHp),5);
@@ -97,20 +97,27 @@ DWORD WINAPI HackThread(HMODULE hModule)
         }
 
         if (GetAsyncKeyState(VK_F3) & 1 )
+        {
             bFreezingHealth = !bFreezingHealth;
+        }
 
-            if (bFreezingHealth)
-                localPlayer->m_health = 1337;
+        if (bFreezingHealth)
+            localPlayer->m_health = 1337;
 
         if (GetAsyncKeyState(VK_F4) & 1)
+        {
             bFreezingRifleAmmo = !bFreezingRifleAmmo;
+        }
+
+        if (bFreezingRifleAmmo)
+            localPlayer->assaultRifleAmmo = 1337;
 
             // TO DO : actualWeaponTo1337
-            if (bFreezingRifleAmmo)
-                localPlayer->assaultRifleAmmo = 1337;
 
         if (GetAsyncKeyState(VK_F5) & 1)
+        {
             bAimbot = !bAimbot;
+        }
 
             if (bAimbot)
                 Aimbot::RunAimbot();
