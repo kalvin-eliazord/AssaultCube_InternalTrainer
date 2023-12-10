@@ -1,16 +1,5 @@
 #include "header.h"
 
-// TODO: trampoline hook 
-using tWglSwapBuffers = BOOL(__stdcall*)(HDC hDc);
-
-tWglSwapBuffers oWglSwapBuffers;
-
-BOOL __stdcall hkWglSwapBuffers(HDC hDc)
-{
-    std::cout << "Swapbuffer hooked! \n";
-    return oWglSwapBuffers(hDc);
-}
-
 Hook::Hook(uintptr_t* pSrc, const int pSize = 5)
     : src{ pSrc }
     , size{ pSize }
@@ -32,6 +21,19 @@ int Hook::GetSize()
     return this->size;
 }
 
+uintptr_t* Hook::TrampolineHook(uintptr_t* pDst)
+{
+    uintptr_t* gateway{ nullptr };
+    DetourTo(pDst);
+
+    gateway = (uintptr_t*)VirtualAlloc(NULL, MAX_PATH, MEM_COMMIT | MEM_RESERVE, NULL);
+
+    if(this->stolenBytes != nullptr)
+        memcpy_s(gateway, this->size, this->stolenBytes, this->size);
+
+    return gateway;
+}
+
 void Hook::DetourTo(uintptr_t* pDst)
 {
     DWORD oldProtection{};
@@ -39,13 +41,13 @@ void Hook::DetourTo(uintptr_t* pDst)
 
     // saving the stolen bytes
     this->stolenBytes = new uintptr_t[this->size];
-    memcpy(this->stolenBytes, this->src, this->size);
+    memcpy_s(this->stolenBytes, this->size, this->src, this->size);
 
     // Nop the page
     memset(this->src, 0x90, this->size);
 
-    constexpr uintptr_t jmpSyze{ 5 };
-    const     uintptr_t dstAddrOffset{ ((uintptr_t)pDst - (uintptr_t)this->src) - jmpSyze };
+    constexpr uintptr_t JMP_SYZE{ 5 };
+    const     uintptr_t dstAddrOffset{ ((uintptr_t)pDst - (uintptr_t)this->src) - JMP_SYZE };
 
     // writting JMP
     *src = 0xE9;

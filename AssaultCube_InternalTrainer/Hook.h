@@ -12,6 +12,7 @@ public:
 
 	uintptr_t* GetSrc();
 	int GetSize();
+	uintptr_t* TrampolineHook(uintptr_t* pDst);
 	void DetourTo(uintptr_t* pDst);
 	void StopDetour();
 	uintptr_t GetJmpBackAddr();

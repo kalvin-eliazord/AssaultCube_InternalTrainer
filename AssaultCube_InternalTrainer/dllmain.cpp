@@ -47,7 +47,18 @@ void __declspec(naked) ASM_UnlimitedRifleAmmo()
     }
 }
 
-DWORD WINAPI HackThread(HMODULE hModule)
+// Pointer of the openGL function
+using tWglSwapBuffers = BOOL(__stdcall*)(HDC hDc);
+tWglSwapBuffers oWglSwapBuffers;
+
+// Gateway used to run stolen bytes
+BOOL __stdcall hkWglSwapBuffers(HDC hDc)
+{
+    std::cout << "Swapbuffer hooked! \n";
+    return oWglSwapBuffers(hDc);
+}
+
+DWORD WINAPI mainHackThread(HMODULE hModule)
 {
     // Create a file to open a writtable console 
     AllocConsole();
@@ -65,6 +76,7 @@ DWORD WINAPI HackThread(HMODULE hModule)
 
     Entity* localPlayer{ EntityManager::GetLocalPlayerPtr() };
 
+    // DETOUR 
     // No Bullet Damage Detour
     Hook hkNoBulletDamage((uintptr_t*)(Offset::ModBaseAddr + Offset::DecHp),5);
     jmpBackAddrNoBulletDmg = hkNoBulletDamage.GetJmpBackAddr();
@@ -72,6 +84,11 @@ DWORD WINAPI HackThread(HMODULE hModule)
     // Unlimited Rifle Ammo Detour
     Hook hkUnlimitedRifleAmmo((uintptr_t*)(Offset::ModBaseAddr + Offset::DecAmmo), 7);
     jmpBackAddrRifleAmmo = hkUnlimitedRifleAmmo.GetJmpBackAddr();
+
+    // TRAMPOLINE HOOK
+    Hook tHkwglSwapBuffers((uintptr_t*)GetProcAddress(GetModuleHandleW(L"opengl32.dll"), "wglSwapBuffers"), 6);
+    
+    oWglSwapBuffers = (tWglSwapBuffers) tHkwglSwapBuffers.TrampolineHook((uintptr_t*)hkWglSwapBuffers);
 
     // Hacking Loop
     while (!GetAsyncKeyState(VK_DELETE) & 1)
@@ -144,7 +161,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 {
     if (ul_reason_for_call == DLL_PROCESS_ATTACH)
     {
-        HANDLE hackThread{ (CreateThread(NULL, NULL, LPTHREAD_START_ROUTINE(HackThread), hModule, NULL, nullptr)) };
+        HANDLE hackThread{ (CreateThread(NULL, NULL, LPTHREAD_START_ROUTINE(mainHackThread), hModule, NULL, nullptr)) };
 
         if (hackThread)
             CloseHandle(hackThread);
