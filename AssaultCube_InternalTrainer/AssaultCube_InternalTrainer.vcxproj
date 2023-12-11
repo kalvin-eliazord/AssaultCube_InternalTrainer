@@ -146,12 +146,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Aimbot.h" />
+    <ClInclude Include="CheatMenu.h" />
     <ClInclude Include="Hook.h" />
     <ClInclude Include="MemoryChanger.h" />
     <ClInclude Include="EntityManager.h" />
     <ClInclude Include="header.h" />
     <ClInclude Include="Offset.h" />
     <ClInclude Include="Entity.h" />
+    <ClInclude Include="ShellCode.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Aimbot.cpp" />
@@ -159,6 +161,7 @@
     <ClCompile Include="MemoryChanger.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="EntityManager.cpp" />
+    <ClCompile Include="ShellCode.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

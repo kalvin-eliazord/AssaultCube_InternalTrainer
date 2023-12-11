@@ -10,3 +10,5 @@
 #include "Aimbot.h"
 #include "MemoryChanger.h"
 #include "Hook.h"
+#include "ShellCode.h"
+#include "CheatMenu.h"

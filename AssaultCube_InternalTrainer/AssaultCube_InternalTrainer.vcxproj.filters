@@ -27,6 +27,12 @@
     <Filter Include="Hook">
       <UniqueIdentifier>{666790fc-cd97-43aa-9463-c0f373af5d01}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ShellCode">
+      <UniqueIdentifier>{5f82ef6b-0cab-4841-8b0c-b102a82b961d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CheatMenu">
+      <UniqueIdentifier>{ff73e326-e5ba-4bac-9f49-e28f81016c51}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Entity.h">
@@ -50,6 +56,12 @@
     <ClInclude Include="Hook.h">
       <Filter>Hook</Filter>
     </ClInclude>
+    <ClInclude Include="ShellCode.h">
+      <Filter>ShellCode</Filter>
+    </ClInclude>
+    <ClInclude Include="CheatMenu.h">
+      <Filter>CheatMenu</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EntityManager.cpp">
@@ -66,6 +78,9 @@
     </ClCompile>
     <ClCompile Include="Hook.cpp">
       <Filter>Hook</Filter>
+    </ClCompile>
+    <ClCompile Include="ShellCode.cpp">
+      <Filter>ShellCode</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

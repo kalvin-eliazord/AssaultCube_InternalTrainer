@@ -3,8 +3,8 @@
 void Aimbot::RunAimbot()
 {
     // start AIMBOT //
-
     Entity* localPlayer{ EntityManager::GetLocalPlayerPtr() };
+
     float closestDistance{ 1000000.0f };
     float currentDistance{ NULL };
     int   closestEntityIndex{ -1 };

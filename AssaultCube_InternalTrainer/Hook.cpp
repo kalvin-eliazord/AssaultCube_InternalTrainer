@@ -5,11 +5,16 @@ Hook::Hook(uintptr_t* pSrc, const int pSize = 5)
     , size{ pSize }
 {}
 
+Hook::Hook()
+{}
+
+/*
 Hook::~Hook()
 {
     this->StopDetour();
     delete this->src;
 }
+*/
 
 uintptr_t* Hook::GetSrc()
 {
@@ -21,15 +26,31 @@ int Hook::GetSize()
     return this->size;
 }
 
-uintptr_t* Hook::TrampolineHook(uintptr_t* pDst)
+void Hook::SetSrc(uintptr_t* pSrc)
+{
+    this->src = pSrc;
+}
+
+void Hook::SetSize(int pSize)
+{
+    this->size = pSize;
+}
+
+uintptr_t* Hook::TrampolineHookTo(uintptr_t* pDst)
 {
     uintptr_t* gateway{ nullptr };
+
     DetourTo(pDst);
 
-    gateway = (uintptr_t*)VirtualAlloc(NULL, MAX_PATH, MEM_COMMIT | MEM_RESERVE, NULL);
+    gateway = (uintptr_t*)VirtualAlloc(NULL, this->size, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
 
     if(this->stolenBytes != nullptr)
         memcpy_s(gateway, this->size, this->stolenBytes, this->size);
+
+    constexpr uintptr_t JMP_SYZE{ 5 };
+    const uintptr_t gatewayRelativeAddr{ ((uintptr_t)this->src - (uintptr_t)gateway) - JMP_SYZE };
+
+    *(uintptr_t*)((uintptr_t)gateway + this->size) = gatewayRelativeAddr;
 
     return gateway;
 }
