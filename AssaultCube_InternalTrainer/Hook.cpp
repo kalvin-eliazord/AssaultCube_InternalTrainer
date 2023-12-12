@@ -8,12 +8,6 @@ Hook::Hook(uintptr_t* pSrc, const int pSize = 5)
 Hook::Hook()
 {}
 
-Hook::~Hook()
-{
-    this->StopDetour();
-    delete this->src;
-}
-
 uintptr_t* Hook::GetSrc()
 {
     return this->src;

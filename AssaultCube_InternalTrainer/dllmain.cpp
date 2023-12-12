@@ -15,7 +15,6 @@ BOOL __stdcall hkWglSwapBuffers(HDC hDc)
     {
         CheatMenu::bUnlimitedRifleAmmo = !CheatMenu::bUnlimitedRifleAmmo;
 
-        // Unlimited Rifle Ammo Detour
         if (CheatMenu::bUnlimitedRifleAmmo)
             hkUnlimitedRifleAmmo.DetourTo((uintptr_t*)ShellCode::UnlimitedRifleAmmo);
         else
@@ -35,21 +34,23 @@ BOOL __stdcall hkWglSwapBuffers(HDC hDc)
 
     Entity* localPlayer{ EntityManager::GetLocalPlayerPtr() };
 
+    // Freezing Health
     if (GetAsyncKeyState(VK_F3) & 1)
         CheatMenu::bFreezingHealth = !CheatMenu::bFreezingHealth;
-
-    if (GetAsyncKeyState(VK_F4) & 1)
-        CheatMenu::bFreezingRifleAmmo = !CheatMenu::bFreezingRifleAmmo;
-
-    if (GetAsyncKeyState(VK_F5) & 1)
-        CheatMenu::bAimbot = !CheatMenu::bAimbot;
 
     if (CheatMenu::bFreezingHealth)
         localPlayer->m_health = 1337;
 
-    // TO DO : actualWeaponTo1337
+    // Freezing Rifle Ammo TO DO : actualWeaponTo1337
+    if (GetAsyncKeyState(VK_F4) & 1)
+        CheatMenu::bFreezingRifleAmmo = !CheatMenu::bFreezingRifleAmmo;
+
     if (CheatMenu::bFreezingRifleAmmo)
         localPlayer->assaultRifleAmmo = 1337;
+
+    // Aimbot
+    if (GetAsyncKeyState(VK_F5) & 1)
+        CheatMenu::bAimbot = !CheatMenu::bAimbot;
 
     if (CheatMenu::bAimbot)
         Aimbot::RunAimbot();
