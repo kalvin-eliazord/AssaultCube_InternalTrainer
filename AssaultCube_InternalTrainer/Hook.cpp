@@ -8,13 +8,11 @@ Hook::Hook(uintptr_t* pSrc, const int pSize = 5)
 Hook::Hook()
 {}
 
-/*
 Hook::~Hook()
 {
     this->StopDetour();
     delete this->src;
 }
-*/
 
 uintptr_t* Hook::GetSrc()
 {
@@ -42,7 +40,7 @@ uintptr_t* Hook::TrampolineHookTo(uintptr_t* pDst)
 
     DetourTo(pDst);
 
-    gateway = (uintptr_t*)VirtualAlloc(NULL, this->size, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+    gateway = (uintptr_t*)VirtualAlloc(NULL, this->size+5, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
 
     if(this->stolenBytes != nullptr)
         memcpy_s(gateway, this->size, this->stolenBytes, this->size);
@@ -50,7 +48,9 @@ uintptr_t* Hook::TrampolineHookTo(uintptr_t* pDst)
     constexpr uintptr_t JMP_SYZE{ 5 };
     const uintptr_t gatewayRelativeAddr{ ((uintptr_t)this->src - (uintptr_t)gateway) - JMP_SYZE };
 
-    *(uintptr_t*)((uintptr_t)gateway + this->size) = gatewayRelativeAddr;
+    *(uintptr_t*)((uintptr_t)gateway + this->size) = 0xE9;
+
+    *(uintptr_t*)((uintptr_t)gateway + this->size + 1) = gatewayRelativeAddr;
 
     return gateway;
 }
@@ -83,7 +83,7 @@ void Hook::StopDetour()
 {
     if (this->stolenBytes != nullptr)
     {
-        MemoryChanger::PatchingPage(this->src, this->stolenBytes, this->size);
+        PagePatcher::PatchingPage(this->src, this->stolenBytes, this->size);
         delete[] this->stolenBytes;
     }
 }

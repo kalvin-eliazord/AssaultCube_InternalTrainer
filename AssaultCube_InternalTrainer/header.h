@@ -8,7 +8,7 @@
 #include "Entity.h"
 #include "EntityManager.h"
 #include "Aimbot.h"
-#include "MemoryChanger.h"
+#include "PagePatcher.h"
 #include "Hook.h"
 #include "ShellCode.h"
 #include "CheatMenu.h"

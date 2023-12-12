@@ -3,18 +3,16 @@
 // Pointer of the openGL function
 using tWglSwapBuffers = BOOL(__stdcall*)(HDC hDc);
 tWglSwapBuffers oWglSwapBuffers;
+Hook hkOpenGL{};
+Hook hkUnlimitedRifleAmmo((uintptr_t*)(Offset::ModBaseAddr + Offset::DecAmmo), 7);
+Hook hkNoBulletDamage((uintptr_t*)(Offset::ModBaseAddr + Offset::DecHp), 5);
 
-Hook openGLHook{};
-
-// Gateway used to run stolen bytes
+// wglSwapBuffers function copy to run my code + stolen bytes
 BOOL __stdcall hkWglSwapBuffers(HDC hDc)
 {
-    // DETOUR 
+    // Unlimited Rifle Ammo Detour
     if (GetAsyncKeyState(VK_F1) & 1)
     {
-        Hook hkUnlimitedRifleAmmo((uintptr_t*)(Offset::ModBaseAddr + Offset::DecAmmo), 7);
-
-        ShellCode::jmpBackAddrRifleAmmo = hkUnlimitedRifleAmmo.GetJmpBackAddr();
         CheatMenu::bUnlimitedRifleAmmo = !CheatMenu::bUnlimitedRifleAmmo;
 
         // Unlimited Rifle Ammo Detour
@@ -24,13 +22,10 @@ BOOL __stdcall hkWglSwapBuffers(HDC hDc)
             hkUnlimitedRifleAmmo.StopDetour();
     }
 
+    // No Bullet Damage Detour
     if (GetAsyncKeyState(VK_F2) & 1)
     {
         CheatMenu::bNoBulletDamage = !CheatMenu::bNoBulletDamage;
-
-        // No Bullet Damage Detour
-        Hook hkNoBulletDamage((uintptr_t*)(Offset::ModBaseAddr + Offset::DecHp), 5);
-        ShellCode::jmpBackAddrNoBulletDmg = hkNoBulletDamage.GetJmpBackAddr();
 
         if (CheatMenu::bNoBulletDamage)
             hkNoBulletDamage.DetourTo((uintptr_t*)ShellCode::NoBulletDamage);
@@ -39,7 +34,6 @@ BOOL __stdcall hkWglSwapBuffers(HDC hDc)
     }
 
     Entity* localPlayer{ EntityManager::GetLocalPlayerPtr() };
-
 
     if (GetAsyncKeyState(VK_F3) & 1)
         CheatMenu::bFreezingHealth = !CheatMenu::bFreezingHealth;
@@ -65,27 +59,41 @@ BOOL __stdcall hkWglSwapBuffers(HDC hDc)
     return oWglSwapBuffers(hDc);
 }
 
-DWORD WINAPI mainHackThread(HMODULE hModule)
+DWORD WINAPI HackThread(HMODULE hModule)
 {
+
     // Create a file to open a writtable console 
-    AllocConsole();
     FILE* f;
+    AllocConsole();
     freopen_s(&f, "CONOUT$", "w", stdout);
     std::cout << ">> Assault Cube Internal Hack by Kalvin << \n";
-      // TRAMPOLINE HOOK
+
+    ShellCode::jmpBackAddrRifleAmmo = hkUnlimitedRifleAmmo.GetJmpBackAddr();
+    ShellCode::jmpBackAddrNoBulletDmg = hkNoBulletDamage.GetJmpBackAddr();
+
+     // TRAMPOLINE HOOK
     HMODULE hOpenGL32{ GetModuleHandleW(L"opengl32.dll") };
     if (hOpenGL32)
     {
+        // Get "wglSwapBuffers" exported function address
         uintptr_t* wglSwapBuffersAddr{ (uintptr_t*)GetProcAddress(hOpenGL32, "wglSwapBuffers") };
-        openGLHook.SetSrc(wglSwapBuffersAddr);
-        openGLHook.SetSize(5);
 
-        oWglSwapBuffers = (tWglSwapBuffers) openGLHook.TrampolineHookTo((uintptr_t*)hkWglSwapBuffers);
+        // Setting openGL address and size for the trampoline hook
+        hkOpenGL.SetSrc(wglSwapBuffersAddr);
+        hkOpenGL.SetSize(5);
+
+        // Starting the trampoline hook and setting the gateway
+        oWglSwapBuffers = (tWglSwapBuffers)hkOpenGL.TrampolineHookTo((uintptr_t*)hkWglSwapBuffers);
     }
-    //hkUnlimitedRifleAmmo.StopDetour();
-    //hkNoBulletDamage.StopDetour();
 
-    if (f)
+    while (!GetAsyncKeyState(VK_DELETE) & 1)
+    {}
+
+    hkUnlimitedRifleAmmo.StopDetour();
+    hkNoBulletDamage.StopDetour();
+    hkOpenGL.StopDetour();
+
+    if(f)
         fclose(f);
 
     FreeConsole();
@@ -101,7 +109,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 {
     if (ul_reason_for_call == DLL_PROCESS_ATTACH)
     {
-        HANDLE hackThread{ (CreateThread(NULL, NULL, LPTHREAD_START_ROUTINE(mainHackThread), hModule, NULL, nullptr)) };
+        HANDLE hackThread{ (CreateThread(NULL, NULL, LPTHREAD_START_ROUTINE(HackThread), hModule, NULL, nullptr)) };
 
         if (hackThread)
             CloseHandle(hackThread);

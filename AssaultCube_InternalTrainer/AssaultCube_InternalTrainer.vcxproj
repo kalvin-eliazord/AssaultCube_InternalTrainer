@@ -148,7 +148,7 @@
     <ClInclude Include="Aimbot.h" />
     <ClInclude Include="CheatMenu.h" />
     <ClInclude Include="Hook.h" />
-    <ClInclude Include="MemoryChanger.h" />
+    <ClInclude Include="PagePatcher.h" />
     <ClInclude Include="EntityManager.h" />
     <ClInclude Include="header.h" />
     <ClInclude Include="Offset.h" />
@@ -158,7 +158,7 @@
   <ItemGroup>
     <ClCompile Include="Aimbot.cpp" />
     <ClCompile Include="Hook.cpp" />
-    <ClCompile Include="MemoryChanger.cpp" />
+    <ClCompile Include="PagePatcher.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="EntityManager.cpp" />
     <ClCompile Include="ShellCode.cpp" />

@@ -9,7 +9,7 @@ private:
 public:
 	Hook(uintptr_t* pSrc, const int pSize);
 	Hook();
-	//~Hook();
+	~Hook();
 
 	uintptr_t* GetSrc();
 	int GetSize();

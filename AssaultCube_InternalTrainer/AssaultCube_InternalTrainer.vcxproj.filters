@@ -18,9 +18,6 @@
     <Filter Include="Entity">
       <UniqueIdentifier>{67d6ad1b-db31-48af-9cc5-b4284a690603}</UniqueIdentifier>
     </Filter>
-    <Filter Include="MemoryChanger">
-      <UniqueIdentifier>{d001ce21-f6c1-4386-b771-04409e63fafc}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Offset">
       <UniqueIdentifier>{b845744b-2dec-4aae-8595-e548de878e59}</UniqueIdentifier>
     </Filter>
@@ -32,6 +29,9 @@
     </Filter>
     <Filter Include="CheatMenu">
       <UniqueIdentifier>{ff73e326-e5ba-4bac-9f49-e28f81016c51}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PagePatcher">
+      <UniqueIdentifier>{d001ce21-f6c1-4386-b771-04409e63fafc}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -50,8 +50,8 @@
     <ClInclude Include="Aimbot.h">
       <Filter>Aimbot</Filter>
     </ClInclude>
-    <ClInclude Include="MemoryChanger.h">
-      <Filter>MemoryChanger</Filter>
+    <ClInclude Include="PagePatcher.h">
+      <Filter>PagePatcher</Filter>
     </ClInclude>
     <ClInclude Include="Hook.h">
       <Filter>Hook</Filter>
@@ -73,8 +73,8 @@
     <ClCompile Include="dllmain.cpp">
       <Filter>main</Filter>
     </ClCompile>
-    <ClCompile Include="MemoryChanger.cpp">
-      <Filter>MemoryChanger</Filter>
+    <ClCompile Include="PagePatcher.cpp">
+      <Filter>PagePatcher</Filter>
     </ClCompile>
     <ClCompile Include="Hook.cpp">
       <Filter>Hook</Filter>

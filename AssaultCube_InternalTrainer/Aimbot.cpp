@@ -36,7 +36,7 @@ void Aimbot::RunAimbot()
         Entity* closestEntity{ EntityManager::GetEntityPtr(closestEntityIndex) };
         const Vector3 entityAngles{ Aimbot::CalculateAnglesOf(closestEntity) };
 
-        std::cout << "Target is: " << closestEntity->name << "\r";
+        std::cout << "Target is: " << closestEntity->name << ", RIGHT CLICK to aim!\t \r";
 
         // right click to aim at the closest target
         if (GetAsyncKeyState(VK_RBUTTON))
