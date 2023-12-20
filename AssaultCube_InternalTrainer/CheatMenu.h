@@ -7,4 +7,5 @@ namespace CheatMenu
     static bool bFreezingHealth{ false };
     static bool bFreezingRifleAmmo{ false };
     static bool bAimbot{ false };
+    static bool bTriggerBot{ false };
 };

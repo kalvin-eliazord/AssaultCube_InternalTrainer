@@ -55,6 +55,19 @@ BOOL __stdcall hkWglSwapBuffers(HDC hDc)
     if (CheatMenu::bAimbot)
         Aimbot::RunAimbot();
 
+    if (GetAsyncKeyState(VK_F6) & 1)
+        CheatMenu::bTriggerBot = !CheatMenu::bTriggerBot;
+    
+    if (CheatMenu::bTriggerBot)
+    {
+        Entity* currEntityCrossHair{ EntityManager::GetEntityCrossHair() };
+
+        if (EntityManager::IsValid(currEntityCrossHair))
+            *(bool*)((uintptr_t)EntityManager::GetLocalPlayerPtr() + 0x224) = true;
+        else
+            *(bool*)((uintptr_t)EntityManager::GetLocalPlayerPtr() + 0x224) = false;
+    }
+
     Sleep(5);
 
     return oWglSwapBuffers(hDc);
@@ -62,7 +75,6 @@ BOOL __stdcall hkWglSwapBuffers(HDC hDc)
 
 DWORD WINAPI HackThread(HMODULE hModule)
 {
-
     // Create a file to open a writtable console 
     FILE* f;
     AllocConsole();
@@ -88,7 +100,7 @@ DWORD WINAPI HackThread(HMODULE hModule)
     }
 
     while (!GetAsyncKeyState(VK_DELETE) & 1)
-    {}
+        Sleep(5);
 
     hkUnlimitedRifleAmmo.StopDetour();
     hkNoBulletDamage.StopDetour();

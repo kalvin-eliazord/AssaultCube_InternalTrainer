@@ -28,6 +28,10 @@ int* EntityManager::GetNumberOfPlayerPtr()
 
 bool EntityManager::IsValid(Entity* pEntity)
 {
+	// is entity not loaded
+	if (!pEntity or *(uintptr_t*)pEntity == Offset::EntityNotLoaded)
+		return false;
+
 	// is entity dead
 	if (pEntity->m_health <= 0)
 		return false;
@@ -36,11 +40,20 @@ bool EntityManager::IsValid(Entity* pEntity)
 	if (pEntity->teamID == EntityManager::GetLocalPlayerPtr()->teamID)
 		return false;
 
-	// is entity not loaded
-	if (!pEntity or *(uintptr_t*) pEntity == Offset::EntityNotLoaded)
-		return false;
-
-	//is entity behind wall
-
 	return true;
+}
+
+Entity* EntityManager::GetEntityCrossHair()
+{
+	uintptr_t* pEntity{NULL};
+	uintptr_t getEntityCrossHairFuncAddr{ Offset::ModBaseAddr + 0x607C0 };
+	__asm
+	{
+		sub esp, 7
+		call getEntityCrossHairFuncAddr
+		mov pEntity, eax
+		add esp, 7
+	}
+	
+	return (Entity*)pEntity;
 }
