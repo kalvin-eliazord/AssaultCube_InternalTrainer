@@ -34,19 +34,22 @@ BOOL __stdcall hkWglSwapBuffers(HDC hDc)
 
     Entity* localPlayer{ EntityManager::GetLocalPlayerPtr() };
 
-    // Freezing Health
+    // Freezing Health and Armor value
     if (GetAsyncKeyState(VK_F3) & 1)
-        CheatMenu::bFreezingHealth = !CheatMenu::bFreezingHealth;
+        CheatMenu::bFreezingHealthArmor = !CheatMenu::bFreezingHealthArmor;
 
-    if (CheatMenu::bFreezingHealth)
+    if (CheatMenu::bFreezingHealthArmor)
+    {
         localPlayer->m_health = 1337;
+        localPlayer->m_armor  = 1337;
+    }
 
-    // Freezing Rifle Ammo TO DO : actualWeaponTo1337
+    // Freezing actual weapon ammo value
     if (GetAsyncKeyState(VK_F4) & 1)
-        CheatMenu::bFreezingRifleAmmo = !CheatMenu::bFreezingRifleAmmo;
+        CheatMenu::bFreezingActualWeaponAmmo = !CheatMenu::bFreezingActualWeaponAmmo;
 
-    if (CheatMenu::bFreezingRifleAmmo)
-        localPlayer->assaultRifleAmmo = 1337;
+    if (CheatMenu::bFreezingActualWeaponAmmo)
+        *localPlayer->actualWeaponPtr.ammoPtr = 1337;
 
     // Aimbot
     if (GetAsyncKeyState(VK_F5) & 1)
@@ -55,6 +58,7 @@ BOOL __stdcall hkWglSwapBuffers(HDC hDc)
     if (CheatMenu::bAimbot)
         Aimbot::RunAimbot();
 
+    // Triggerbot
     if (GetAsyncKeyState(VK_F6) & 1)
         CheatMenu::bTriggerBot = !CheatMenu::bTriggerBot;
     
